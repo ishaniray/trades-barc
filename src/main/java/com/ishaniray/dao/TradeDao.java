@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import com.ishaniray.dao.extractor.LatestTradeExtractor;
 import com.ishaniray.dto.Trade;
 
 @Component
@@ -15,6 +16,8 @@ public class TradeDao {
 
 	private JdbcTemplate jdbcTemplate;
 
+	private LatestTradeExtractor latestTradeExtractor;
+
 	private static final String INSERT_SQL = "INSERT INTO Trades "
 			+ "(TradeId, Version, CounterPartyId, BookId, MaturityDate, CreatedDate, Expired) "
 			+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -22,11 +25,15 @@ public class TradeDao {
 	private static final String UPDATE_SQL = "UPDATE Trades SET CounterPartyId = ?, BookId = ?, "
 			+ "MaturityDate = ?, CreatedDate = ?, Expired = ? WHERE TradeId = ? AND Version = ?";
 
-	private static final String EXPIRE_SQL = "UPDATE TRADES SET Expired = 'Y' WHERE TradeId = ? AND Version = ?";
+	private static final String EXPIRE_SQL = "UPDATE Trades SET Expired = 'Y' WHERE TradeId = ? AND Version = ?";
+
+	private static final String FETCH_LATEST_SQL = "SELECT * FROM Trades WHERE TradeId = ? "
+			+ "ORDER BY Version DESC LIMIT 1";
 
 	@Autowired
-	public TradeDao(JdbcTemplate jdbcTemplate) {
+	public TradeDao(JdbcTemplate jdbcTemplate, LatestTradeExtractor latestTradeExtractor) {
 		this.jdbcTemplate = jdbcTemplate;
+		this.latestTradeExtractor = latestTradeExtractor;
 	}
 
 	public void insertTrade(Trade trade) {
@@ -48,5 +55,13 @@ public class TradeDao {
 		jdbcTemplate.update(EXPIRE_SQL, tradeId, version);
 
 		LOGGER.debug("Trade [id = {}, version = {}] marked as expired.", tradeId, version);
+	}
+
+	public Trade fetchLatestTrade(String tradeId) {
+		Trade trade = jdbcTemplate.query(FETCH_LATEST_SQL, latestTradeExtractor);
+
+		LOGGER.debug("Latest trade for TradeId = {} fetched: {}", tradeId, trade.toString());
+
+		return trade;
 	}
 }
