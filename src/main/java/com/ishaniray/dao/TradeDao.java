@@ -61,7 +61,7 @@ public class TradeDao {
 	}
 
 	public Optional<Trade> fetchLatestTrade(String tradeId) {
-		Optional<Trade> trade = jdbcTemplate.query(FETCH_LATEST_SQL, latestTradeExtractor);
+		Optional<Trade> trade = jdbcTemplate.query(FETCH_LATEST_SQL, latestTradeExtractor, tradeId);
 
 		String logMessage = trade.isPresent()
 				? MessageFormat.format("Latest trade for TradeId = {0} fetched: {1}", tradeId, trade.get())
