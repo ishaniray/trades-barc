@@ -63,7 +63,7 @@ public class TradeDao {
 		Optional<Trade> trade = jdbcTemplate.query(FETCH_LATEST_SQL, latestTradeExtractor);
 
 		String logMessage = trade.isPresent()
-				? MessageFormat.format("Latest trade for TradeId = {0} fetched: {1}", tradeId, trade.get().toString())
+				? MessageFormat.format("Latest trade for TradeId = {0} fetched: {1}", tradeId, trade.get())
 				: MessageFormat.format("No trade found in the store for TradeId = {0}", tradeId);
 		LOGGER.debug(logMessage);
 
