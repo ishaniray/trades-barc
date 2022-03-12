@@ -28,7 +28,7 @@ public class TradeDao {
 	private static final String UPDATE_SQL = "UPDATE Trades SET CounterPartyId = ?, BookId = ?, "
 			+ "MaturityDate = ?, CreatedDate = ?, Expired = ? WHERE TradeId = ? AND Version = ?";
 
-	private static final String EXPIRE_SQL = "UPDATE Trades SET Expired = 'Y' WHERE TradeId = ? AND Version = ?";
+	private static final String EXPIRE_SQL = "UPDATE Trades SET Expired = 'Y' WHERE MaturityDate < CURRENT_DATE()";
 
 	private static final String FETCH_LATEST_SQL = "SELECT * FROM Trades WHERE TradeId = ? "
 			+ "ORDER BY Version DESC LIMIT 1";
@@ -54,10 +54,9 @@ public class TradeDao {
 		LOGGER.debug("Trade [id = {}, version = {}] updated.", trade.getTradeId(), trade.getVersion());
 	}
 
-	public void expireTrade(String tradeId, int version) {
-		jdbcTemplate.update(EXPIRE_SQL, tradeId, version);
-
-		LOGGER.debug("Trade [id = {}, version = {}] marked as expired.", tradeId, version);
+	public void markExpiredTrades() {
+		int markedTrades = jdbcTemplate.update(EXPIRE_SQL);
+		LOGGER.debug("{} trades marked as expired.", markedTrades);
 	}
 
 	public Optional<Trade> fetchLatestTrade(String tradeId) {
