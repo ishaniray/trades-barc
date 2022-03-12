@@ -31,7 +31,7 @@ public class TradeService {
 	public void handleTrade(Trade trade) throws TradeException {
 		if (trade.getMaturityDate().isBefore(LocalDate.now())) {
 			MaturedTradeException mte = new MaturedTradeException(
-					MessageFormat.format("{0} has already expired.", trade));
+					MessageFormat.format("{0} has already matured.", trade));
 			LOGGER.error(mte.getMessage());
 			throw mte;
 		}
