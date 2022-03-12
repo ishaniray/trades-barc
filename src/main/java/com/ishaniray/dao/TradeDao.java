@@ -54,9 +54,10 @@ public class TradeDao {
 		LOGGER.debug("Trade [id = {}, version = {}] updated.", trade.getTradeId(), trade.getVersion());
 	}
 
-	public void markExpiredTrades() {
+	public int markExpiredTrades() {
 		int markedTrades = jdbcTemplate.update(EXPIRE_SQL);
 		LOGGER.debug("{} trades marked as expired.", markedTrades);
+		return markedTrades;
 	}
 
 	public Optional<Trade> fetchLatestTrade(String tradeId) {

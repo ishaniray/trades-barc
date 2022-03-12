@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.ishaniray.dao.TradeDao;
 import com.ishaniray.dto.Trade;
+import com.ishaniray.enums.TradeAction;
 import com.ishaniray.exception.MaturedTradeException;
 import com.ishaniray.exception.StaleTradeException;
 import com.ishaniray.exception.TradeException;
@@ -28,7 +29,7 @@ public class TradeService {
 		this.tradeDao = tradeDao;
 	}
 
-	public void handleTrade(Trade trade) throws TradeException {
+	public TradeAction handleTrade(Trade trade) throws TradeException {
 		if (trade.getMaturityDate().isBefore(LocalDate.now())) {
 			MaturedTradeException mte = new MaturedTradeException(
 					MessageFormat.format("{0} has already matured.", trade));
@@ -39,7 +40,7 @@ public class TradeService {
 		Optional<Trade> latestTrade = tradeDao.fetchLatestTrade(trade.getTradeId());
 		if (!latestTrade.isPresent()) {
 			recordTrade(trade);
-			return;
+			return TradeAction.RECORDED;
 		}
 
 		if (trade.getVersion() < latestTrade.get().getVersion()) {
@@ -52,15 +53,16 @@ public class TradeService {
 		if (trade.getVersion() == latestTrade.get().getVersion()) {
 			tradeDao.updateTrade(trade);
 			LOGGER.debug(MessageFormat.format("{0} overwritten in store.", trade));
-			return;
+			return TradeAction.UPDATED;
 		}
 
 		recordTrade(trade);
+		return TradeAction.RECORDED;
 	}
 
 	@Scheduled(cron = "0 0 0 ? * * *")
-	public void markExpiredTrades() {
-		tradeDao.markExpiredTrades();
+	public int markExpiredTrades() {
+		return tradeDao.markExpiredTrades();
 	}
 
 	private void recordTrade(Trade trade) {
