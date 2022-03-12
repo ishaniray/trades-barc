@@ -60,7 +60,7 @@ public class TradeService {
 		return TradeAction.RECORDED;
 	}
 
-	@Scheduled(cron = "0 0 0 ? * * *")
+	@Scheduled(cron = "0 0 0 * * ?")
 	public int markExpiredTrades() {
 		return tradeDao.markExpiredTrades();
 	}
