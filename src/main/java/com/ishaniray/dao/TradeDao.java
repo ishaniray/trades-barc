@@ -44,7 +44,7 @@ public class TradeDao {
 				trade.getBookId(), trade.getMaturityDate(), trade.getCreatedDate(),
 				trade.getExpirationStatus().toString());
 
-		LOGGER.debug("Trade [id = {}, version = {}] recorded.", trade.getTradeId(), trade.getVersion());
+		LOGGER.debug("Trade [id = {}, version = {}] inserted.", trade.getTradeId(), trade.getVersion());
 	}
 
 	public void updateTrade(Trade trade) {

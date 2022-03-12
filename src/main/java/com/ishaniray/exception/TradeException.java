@@ -1,6 +1,6 @@
 package com.ishaniray.exception;
 
-public class TradeException extends RuntimeException {
+public class TradeException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
@@ -14,5 +14,9 @@ public class TradeException extends RuntimeException {
 
 	public TradeException(String message, Throwable cause) {
 		super(message, cause);
+	}
+
+	public TradeException(Throwable cause) {
+		super(cause);
 	}
 }

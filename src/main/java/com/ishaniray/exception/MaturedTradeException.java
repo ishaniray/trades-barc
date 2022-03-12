@@ -15,4 +15,8 @@ public class MaturedTradeException extends TradeException {
 	public MaturedTradeException(String message, Throwable cause) {
 		super(message, cause);
 	}
+
+	public MaturedTradeException(Throwable cause) {
+		super(cause);
+	}
 }
