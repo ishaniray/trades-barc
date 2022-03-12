@@ -17,10 +17,6 @@ public class TradeDao {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TradeDao.class);
 
-	private JdbcTemplate jdbcTemplate;
-
-	private LatestTradeExtractor latestTradeExtractor;
-
 	private static final String INSERT_SQL = "INSERT INTO Trades "
 			+ "(TradeId, Version, CounterPartyId, BookId, MaturityDate, CreatedDate, Expired) "
 			+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -32,6 +28,10 @@ public class TradeDao {
 
 	private static final String FETCH_LATEST_SQL = "SELECT * FROM Trades WHERE TradeId = ? "
 			+ "ORDER BY Version DESC LIMIT 1";
+
+	private JdbcTemplate jdbcTemplate;
+
+	private LatestTradeExtractor latestTradeExtractor;
 
 	@Autowired
 	public TradeDao(JdbcTemplate jdbcTemplate, LatestTradeExtractor latestTradeExtractor) {
