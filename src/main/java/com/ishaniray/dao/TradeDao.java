@@ -1,5 +1,8 @@
 package com.ishaniray.dao;
 
+import java.text.MessageFormat;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,10 +60,13 @@ public class TradeDao {
 		LOGGER.debug("Trade [id = {}, version = {}] marked as expired.", tradeId, version);
 	}
 
-	public Trade fetchLatestTrade(String tradeId) {
-		Trade trade = jdbcTemplate.query(FETCH_LATEST_SQL, latestTradeExtractor);
+	public Optional<Trade> fetchLatestTrade(String tradeId) {
+		Optional<Trade> trade = jdbcTemplate.query(FETCH_LATEST_SQL, latestTradeExtractor);
 
-		LOGGER.debug("Latest trade for TradeId = {} fetched: {}", tradeId, trade.toString());
+		String logMessage = trade.isPresent()
+				? MessageFormat.format("Latest trade for TradeId = {0} fetched: {1}", tradeId, trade.get().toString())
+				: MessageFormat.format("No trade found in the store for TradeId = {0}", tradeId);
+		LOGGER.debug(logMessage);
 
 		return trade;
 	}
